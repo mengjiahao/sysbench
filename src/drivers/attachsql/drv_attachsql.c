@@ -330,7 +330,9 @@ int attachsql_drv_bind_result(db_stmt_t *stmt, db_bind_t *params, size_t len)
 }
 
 
-/* Execute prepared statement */
+/** Execute prepared statement
+ * mjh: ATTACHSQL 实现了多种数据类型，包括TIME。
+ */
 
 
 db_error_t attachsql_drv_execute(db_stmt_t *stmt, db_result_t *rs)

@@ -34,6 +34,9 @@
 #endif
 #include <stdio.h>
 
+/**
+ * mjh: mysql依赖由外部提供，C API。--with-mysql-includes, --with-mysql-libs 
+ */
 #include <mysql.h>
 #include <mysqld_error.h>
 #include <errmsg.h>
@@ -54,8 +57,9 @@
 typedef bool my_bool;
 #endif
 
-/* MySQL driver arguments */
-
+/** MySQL driver arguments
+ * mjh: driver参数说明。数组。
+ */
 static sb_arg_t mysql_drv_args[] =
 {
   SB_OPT("mysql-host", "MySQL server host", "localhost", LIST),
@@ -114,7 +118,12 @@ typedef struct
   int              my_type;
 } db_mysql_bind_map_t;
 
-/* DB-to-MySQL bind types map */
+/** DB-to-MySQL bind types map 
+ * 
+ * mjh: A DATETIME or TIMESTAMP value can contain both date and time parts, YYYY-MM-DD HH:MM:SS.
+ * MySQL converts TIMESTAMP values from the current time zone to UTC for storage, 
+ * and back from UTC to the current time zone for retrieval. (This does not occur for other types such as DATETIME.).
+ */
 db_mysql_bind_map_t db_mysql_bind_map[] =
 {
   {DB_TYPE_TINYINT,   MYSQL_TYPE_TINY},
@@ -271,7 +280,9 @@ int mysql_drv_init(void)
   return 0;
 }
 
-/* Thread-local driver initialization */
+/** Thread-local driver initialization
+ * mjh: mysql客户端多线程模式，子线程调用 mysql_thread_init，主线程调用 mysql_library_init。
+ */
 
 int mysql_drv_thread_init(int thread_id)
 {
@@ -312,6 +323,7 @@ static int mysql_drv_real_connect(db_mysql_conn_t *db_mysql_con)
   const char     *ssl_cert;
   const char     *ssl_ca;
 
+  // mjh: mysql连接时可能调用 mysql_options 设置 ssl/use_compression 属性。
   if (args.use_ssl)
   {
     ssl_key= "client-key.pem";
@@ -384,6 +396,7 @@ int mysql_drv_connect(db_conn_t *sb_conn)
   if (con == NULL)
     return 1;
 
+  // mjh: 设置mysql客户端。
   db_mysql_con->mysql = con;
 
   DEBUG("mysql_init(%p)", con);
@@ -391,6 +404,7 @@ int mysql_drv_connect(db_conn_t *sb_conn)
 
   pthread_mutex_lock(&pos_mutex);
 
+  // mjh: 获取1个 socket/host/port。
   if (SB_LIST_IS_EMPTY(args.sockets))
   {
     db_mysql_con->socket = NULL;
@@ -432,6 +446,7 @@ int mysql_drv_connect(db_conn_t *sb_conn)
   db_mysql_con->password = args.password;
   db_mysql_con->db = args.db;
 
+  // mjh: 真正与服务端建立连接。
   if (mysql_drv_real_connect(db_mysql_con))
   {
     if (!SB_LIST_IS_EMPTY(args.sockets))
@@ -703,6 +718,8 @@ static int mysql_drv_reconnect(db_conn_t *sb_con)
 /*
   Check if the error in a given connection should be fatal or ignored according
   to the list of errors in --mysql-ignore-errors.
+
+  mjh: mysql_errno 接口也要实现。
 */
 
 

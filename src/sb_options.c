@@ -415,7 +415,9 @@ sb_list_t *sb_opt_to_list(option_t *opt)
   return &opt->values;
 }
 
-
+/** 
+ * mjh: 从全局变量 options 中遍历找到对应的属性值。
+ */
 sb_list_t *sb_get_value_list(const char *name)
 {
   option_t       *opt;

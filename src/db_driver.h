@@ -140,6 +140,9 @@ typedef int drv_op_close(struct db_stmt *);
 typedef int drv_op_thread_done(int);
 typedef int drv_op_done(void);
 
+/**
+ * mjh: mysql操作，用指针数组。 
+ */
 typedef struct
 {
   drv_op_init            *init;           /* initializate driver */

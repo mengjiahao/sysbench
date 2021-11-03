@@ -30,6 +30,7 @@ sb_list_item_t;
 typedef sb_list_item_t sb_list_item;
 typedef sb_list_item_t sb_list_t ;
 
+// mjh: linux通过双向链表实现。list只保存双向指针，通过offset获取value，value可以是任何类型。
 #ifndef offsetof
 # define offsetof(type, member) ((size_t) &((type *)0)->member)
 #endif

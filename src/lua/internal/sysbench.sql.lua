@@ -315,6 +315,7 @@ local connection_mt = {
 ffi.metatype("sql_connection", connection_mt)
 
 -- sql_param
+-- mjh: SQL测试参数里没有TIME？
 local sql_param = {}
 function sql_param.set(self, value)
    local sql_type = sysbench.sql.type
