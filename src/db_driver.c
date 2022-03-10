@@ -901,6 +901,7 @@ int db_bulk_insert_next(db_conn_t *con, const char *query, size_t query_len)
   /*
     Reserve space for '\0' and ',' (if not the first chunk in
     a bulk insert
+    这里会不超过con->bulk_buflen，会拼接多条insert SQL1;insert SQL2;...为一个请求
   */
   if (con->bulk_ptr + query_len + 1 + (con->bulk_cnt>0) > con->bulk_buflen)
   {

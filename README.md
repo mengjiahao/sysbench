@@ -288,3 +288,22 @@ For more information on SemVer, please visit [http://semver.org/](http://semver.
 [deb-url]: https://packagecloud.io/akopytov/sysbench?filter=debs
 [rpm-badge]: https://img.shields.io/badge/Packages-RPM-blue.svg?style=flat
 [rpm-url]: https://packagecloud.io/akopytov/sysbench?filter=rpms
+
+
+1.0.18使用方式:
+# for 1.0.18
+oltp_common_option=" --db-driver=mysql --mysql-db=${db} --mysql-user=${user} --mysql-password=${pwd} --mysql-port=${port} --mysql-host=${ip} --tables=${oltp_tables_count} --table_size=${oltp_table_size} --threads=${oltp_tables_count} --create_secondary=${create_secondary} --skip_trx=${oltp_skip_trx} --auto_inc=${oltp_auto_inc} "
+oltp_run_option=" --events=${max_requests} --time=${max_time} --report-interval=${report_interval} "
+
+#清理数据
+#sysbench ${oltp_common_option} ${oltp_run_option} oltp_read_write cleanup
+
+#导入测试数据, CREATE TABLE `sbtest` (`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT, `k` INTEGER UNSIGNED, `c` CHAR(120), `pad` CHAR(60));
+sysbench ${oltp_common_option} ${oltp_run_option} oltp_read_write prepare
+
+#压测数据
+#事务simple-point-select，SELECT c FROM ${rand_table_name} where id=${rand_id};
+sysbench ${oltp_common_option} ${oltp_run_option} oltp_point_select run
+
+#事务update-non-index，UPDATE ${rand_table_name} SET c=${rand_str} WHERE id=${rand_id}
+sysbench ${oltp_common_option} ${oltp_run_option} oltp_update_non_index run
